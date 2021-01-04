@@ -3,17 +3,17 @@
 #include <string.h>
 
 int main(void) {
-	//문자 앞 뒤 공백 있을 수 있음, 단어 수 세기
-	char sentence[100];
+	char str[1000000];
 	int word = 0;
 
-	scanf("%s", sentence);
+	gets(str); //scanf말고 gets 써야함 - gets는 공백 인식 가능
+	char* token = strtok(str, " "); // string token	
 
-	while (1) {
-		char c = getchar();
-		if (c == ' ') {
-
-		}
+	while (token != NULL) {
+		word++;
+		token = strtok(NULL, " ");
 	}
+
+	printf("%d", word);
 	return 0;
 }
