@@ -1,133 +1,66 @@
-#include <stdio.h>
-#include <stdlib.h>
-
-#define TRUE 1
-#define FALSE 0
-#define MAX_QUEUE_SIZE 10
-#define MAX_VERTICES 50
-
-typedef int element;
-typedef struct { // Å¥ Å¸ÀÔ
-	element  queue[MAX_QUEUE_SIZE];
-	int  front, rear;
-} QueueType;
-
-// ¿À·ù ÇÔ¼ö
-void error(char* message)
-{
-	fprintf(stderr, "%s\n", message);
-	exit(1);
+#include <iostream>
+#include <queue>
+using namespace std;
+#define MAX 1001
+ 
+int N, M, V; //ì •ì ê°œìˆ˜, ê°„ì„ ê°œìˆ˜, ì‹œì‘ì •ì 
+int map[MAX][MAX]; //ì¸ì ‘ í–‰ë ¬ ê·¸ë˜í”„
+bool visited[MAX]; //ì •ì  ë°©ë¬¸ ì—¬ë¶€
+queue<int> q;
+ 
+void reset() {
+    for (int i = 1; i <= N; i++) {
+        visited[i] = 0; // ë°©ë¬¸ ì²˜ë¦¬ ì´ˆê¸°í™”
+    }
 }
-
-// °ø¹é »óÅÂ °ËÃâ ÇÔ¼ö
-void queue_init(QueueType* q)
-{
-	q->front = q->rear = 0;
+ 
+void DFS(int v) { // ì¬ê·€ ì‚¬ìš©
+    visited[v] = true; // ë°©ë¬¸ ì²˜ë¦¬
+    printf("%d ", v);
+    
+    for (int i = 1; i <= N; i++) {
+        if (map[v][i] == 1 && visited[i] == 0) { //í˜„ì¬ ì •ì ê³¼ ì—°ê²°ë˜ì–´ìˆê³  ë°©ë¬¸ë˜ì§€ ì•Šì•˜ìœ¼ë©´
+            DFS(i);
+        }
+    }
 }
-
-// °ø¹é »óÅÂ °ËÃâ ÇÔ¼ö
-int is_empty(QueueType* q)
-{
-	return (q->front == q->rear);
+ 
+void BFS(int v) { // í ì‚¬ìš©
+    q.push(v);
+    visited[v] = true;
+    printf("%d ", v);
+ 
+    while (!q.empty()) {
+        v = q.front();
+        q.pop();
+        
+        for (int w = 1; w <= N; w++) {
+            if (map[v][w] == 1 && visited[w] == 0) { //ì •ì ê³¼ ì—°ê²°ë˜ì–´ìˆê³  ë°©ë¬¸ë˜ì§€ ì•Šì•˜ìœ¼ë©´
+                q.push(w);
+                visited[w] = true;
+                printf("%d ", w);
+            }
+        }
+    }
 }
-
-// Æ÷È­ »óÅÂ °ËÃâ ÇÔ¼ö
-int is_full(QueueType* q)
-{
-	return ((q->rear + 1) % MAX_QUEUE_SIZE == q->front);
-}
-
-// »ğÀÔ ÇÔ¼ö
-void enqueue(QueueType* q, element item)
-{
-	if (is_full(q))
-		error("Å¥°¡ Æ÷È­»óÅÂÀÔ´Ï´Ù");
-	q->rear = (q->rear + 1) % MAX_QUEUE_SIZE;
-	q->queue[q->rear] = item;
-}
-
-// »èÁ¦ ÇÔ¼ö
-element dequeue(QueueType* q)
-{
-	if (is_empty(q))
-		error("Å¥°¡ °ø¹é»óÅÂÀÔ´Ï´Ù");
-	q->front = (q->front + 1) % MAX_QUEUE_SIZE;
-	return q->queue[q->front];
-}
-
-
-#define MAX_VERTICES 50
-typedef struct GraphType {
-	int n;	// Á¤Á¡ÀÇ °³¼ö
-	int adj_mat[MAX_VERTICES][MAX_VERTICES];
-} GraphType;
-int visited[MAX_VERTICES];
-
-// ±×·¡ÇÁ ÃÊ±âÈ­ 
-void graph_init(GraphType* g)
-{
-	int r, c;
-	g->n = 0;
-	for (r = 0; r < MAX_VERTICES; r++)
-		for (c = 0; c < MAX_VERTICES; c++)
-			g->adj_mat[r][c] = 0;
-}
-// Á¤Á¡ »ğÀÔ ¿¬»ê
-void insert_vertex(GraphType* g, int v)
-{
-	if (((g->n) + 1) > MAX_VERTICES) {
-		fprintf(stderr, "±×·¡ÇÁ: Á¤Á¡ÀÇ °³¼ö ÃÊ°ú");
-		return;
-	}
-	g->n++;
-}
-// °£¼± »ğÀÔ ¿¬»ê
-void insert_edge(GraphType* g, int start, int end)
-{
-	if (start >= g->n || end >= g->n) {
-		fprintf(stderr, "±×·¡ÇÁ: Á¤Á¡ ¹øÈ£ ¿À·ù");
-		return;
-	}
-	g->adj_mat[start][end] = 1;
-	g->adj_mat[end][start] = 1;
-}
-void bfs_mat(GraphType* g, int v)
-{
-	int w;
-	QueueType q;
-
-	queue_init(&q);     // Å¥ ÃÊ±âÈ­ 
-	visited[v] = TRUE;          // Á¤Á¡ v ¹æ¹® Ç¥½Ã 
-	printf("%d  ¹æ¹® -> ", v);
-	enqueue(&q, v);			// ½ÃÀÛ Á¤Á¡À» Å¥¿¡ ÀúÀå 
-	while (!is_empty(&q)) {
-		v = dequeue(&q);		// Å¥¿¡ Á¤Á¡ ÃßÃâ 
-		for (w = 0; w < g->n; w++)	// ÀÎÁ¢ Á¤Á¡ Å½»ö 
-			if (g->adj_mat[v][w] && !visited[w]) {
-				visited[w] = TRUE;    // ¹æ¹® Ç¥½Ã
-				printf("%d ¹æ¹® -> ", w);
-				enqueue(&q, w); 	// ¹æ¹®ÇÑ Á¤Á¡À» Å¥¿¡ ÀúÀå
-			}
-	}
-}
-
-int main(void)
-{
-	GraphType* g;
-	g = (GraphType*)malloc(sizeof(GraphType));
-	graph_init(g);
-	for (int i = 0; i < 6; i++)
-		insert_vertex(g, i);
-	insert_edge(g, 0, 2);
-	insert_edge(g, 2, 1);
-	insert_edge(g, 2, 3);
-	insert_edge(g, 0, 4);
-	insert_edge(g, 4, 5);
-	insert_edge(g, 1, 5);
-
-	printf("³Êºñ ¿ì¼± Å½»ö\n");
-	bfs_mat(g, 0);
-	printf("\n");
-	free(g);
-	return 0;
+ 
+int main() {
+    scanf("%d %d %d", &N, &M, &V);
+ 
+    for (int i = 0; i < M; i++) {
+        int a, b;
+        scanf("%d %d", &a, &b);
+        map[a][b] = 1;
+        map[b][a] = 1; // ì¸ì ‘ í–‰ë ¬ ê·¸ë˜í”„ - ê°„ì„  ìˆìœ¼ë©´ 1
+    }
+ 
+    reset();
+    DFS(V);
+    
+    printf("\n");
+    
+    reset();
+    BFS(V);
+ 
+    return 0;
 }
