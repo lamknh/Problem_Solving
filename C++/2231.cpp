@@ -5,7 +5,7 @@ int main(int argc, char **argv){ // 부르트포스 알고리즘
     
     while(tmp > 0){
         if(tmp == N){
-
+            tmp 
         }
     }
 
