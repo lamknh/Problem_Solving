@@ -53,6 +53,7 @@ int main(int argc, char** argv){
     for(int j = 0; j <= 50; j++){
       for(int k = 0; k <= 50; k++){
         map[j][k] = 0;
+        visited[j][k] = false; // 방문도 초기화 시켜주기
       }
     }
   }
